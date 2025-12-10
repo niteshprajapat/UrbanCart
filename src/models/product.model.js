@@ -44,6 +44,10 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
+    isDelete: {
+        type: Boolean,
+        default: false
+    },
 
 
 

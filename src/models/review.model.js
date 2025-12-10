@@ -25,7 +25,11 @@ const reviewSchema = new mongoose.Schema({
         min: 1,
         max: 5,
         required: true,
-    }
+    },
+    isDelete: {
+        type: Boolean,
+        default: false
+    },
 
 }, {
     timestamps: true,
