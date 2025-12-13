@@ -67,3 +67,58 @@ export const sendEmailVerificationToken = async (userEmail, token, userName) => 
         throw new Error('Failed to send verification email');
     }
 }
+
+
+
+export const sendAccountVerificationEmail = async (userEmail, userName) => {
+
+    const mailOptions = {
+        from: {
+            name: 'UrbanCart',
+            address: process.env.EMAIL_USER,
+        },
+        to: userEmail,
+        subject: 'Your UrbanCart Account is Verified  🎉',
+        text: `Hello ${userName}!\n\nCongratulations! Your UrbanCart account has been successfully verified.
+
+You can now log in and start shopping with ease.
+
+If you did not perform this action, please contact our support team immediately.
+
+— Team UrbanCart`,
+        html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #4caf50;">🎉 Account Verified Successfully!</h2>
+        <p>Hello <strong>${userName}</strong>,</p>
+
+        <p>
+          We're happy to let you know that your <strong>UrbanCart account has been verified</strong>.
+        </p>
+
+        <p>
+          You can now log in and enjoy a smooth shopping experience.
+        </p>
+
+        <p style="margin-top: 30px;">
+          If you did not verify this account, please contact our support team immediately.
+        </p>
+
+        <hr />
+        <p style="color: #888; font-size: 12px;">
+          © ${new Date().getFullYear()} UrbanCart. All rights reserved.
+        </p>
+      </div>
+
+
+    `,
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('OTP Email sent successfully:', info.messageId);
+        return { success: true, messageId: info.messageId };
+    } catch (error) {
+        console.error('Error sending OTP email:', error.message);
+        throw new Error('Failed to send verification email');
+    }
+}
