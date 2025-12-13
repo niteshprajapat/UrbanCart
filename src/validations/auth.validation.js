@@ -33,3 +33,19 @@ export const loginValidation = Joi.object({
         "string.min": "Password must be at least 6 characters long",
     })
 })
+
+
+export const verifyAccountValidation = Joi.object({
+    otp: Joi.string()
+        .pattern(/^[0-9]{6}$/)
+        .required()
+        .messages({
+            "string.empty": "OTP is required",
+            "any.required": "OTP is required",
+            "string.pattern.base": "OTP must be a 6-digit number",
+        }),
+    email: Joi.string().email().trim().lowercase().required().messages({
+        "string.email": "Please provide a valid email",
+        "any.required": "Email is required",
+    }),
+})
