@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
-import { sendEmailVerificationToken } from "../services/emailHandler.js";
+import { sendAccountVerificationEmail, sendEmailVerificationToken } from "../services/emailHandler.js";
 
 // register
 export const register = async (req, res) => {
@@ -122,6 +122,8 @@ export const login = async (req, res) => {
             user.emailVerificationToken = verificationToken;
             user.emailVerificationTokenExpires = new Date(Date.now() + 5 * 60 * 1000);
 
+            await user.save();
+
             // send token on mail;
             await sendEmailVerificationToken(user.email, verificationToken, user.username);
 
@@ -153,14 +155,53 @@ export const login = async (req, res) => {
 // verifyAccount
 export const verifyAccount = async (req, res) => {
     try {
+        const { otp, email } = req.body;
 
-        yaha pe kaam baki hai - last work - 11 - 12 - 25
+        if (!otp || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required!",
+            });
+        }
+
+
+        const user = await User.findOne({ email });
+
+        if (!otp || !user.emailVerificationToken) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Request!",
+            });
+        }
+
+        if (otp !== user.emailVerificationToken) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP!",
+            });
+        }
+
+        if (Date.now() > user.emailVerificationTokenExpires) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP expired!",
+            });
+        }
+
+
+        // verify user
+        user.isVerified = true;
+        user.emailVerificationToken = undefined;
+        user.emailVerificationTokenExpires = undefined;
+
+        await user.save();
+
+        await sendAccountVerificationEmail(email, user.username);
+
 
         return res.status(200).json({
             success: true,
-            message: "User LoggedIn Successfully!",
-            user,
-            token,
+            message: "Account verified Successfully!",
         })
 
 
