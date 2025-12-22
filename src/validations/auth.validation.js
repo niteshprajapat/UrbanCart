@@ -49,3 +49,11 @@ export const verifyAccountValidation = Joi.object({
         "any.required": "Email is required",
     }),
 })
+
+
+export const resendVerificationTokenValidation = Joi.object({
+    email: Joi.string().email().trim().lowercase().required().messages({
+        "string.email": "Please provide a valid email",
+        "any.required": "Email is required",
+    }),
+})
